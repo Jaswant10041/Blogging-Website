@@ -1,20 +1,15 @@
 const bcrypt=require('bcrypt');
-// const jwt=require('jsonwebtoken');
 const Users=require('../models/userModel');
 const userLogin=async(req,res)=>{
     const data=req.body;
     const foundData=await Users.findOne({email:data.email});
     const flag=await bcrypt.compare(data.password,foundData.password);
-    // res.status(200).json(flag);
     if(flag==false){
         res.status(201).json({msg:"Incorrect credentials"});
     }
     else{
         res.status(201).json({msg:"Login Successful"});
-    }
-    // console.log(flag);
-    // console.log('Login successfull');
-    
+    }    
 }
 const userRegister=async(req,res)=>{
     const data=req.body;

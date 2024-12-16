@@ -36,9 +36,8 @@ schema.methods.toUserResponse=function(){
         user:{
             name:this.name,
             email:this.email,
-            password:this.password
-        },
-        accessToken: this.generateAccessToken()
+            accessToken: this.generateAccessToken()
+        }
     }
 }
 const model=mongoose.model('users',schema);
