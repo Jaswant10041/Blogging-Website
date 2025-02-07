@@ -1,5 +1,5 @@
 const mongoose=require('mongoose');
-const jwt=require('jsonwebtoken')
+const jwt=require('jsonwebtoken');
 const schema=new mongoose.Schema({
     name:{
         type:String,
@@ -21,7 +21,7 @@ schema.methods.generateAccessToken=function(){
     const accessToken=jwt.sign(
         {
             user:{
-                name:this.name,
+                name:this.name || "",
                 email:this.email,
                 password:this.password
             } 

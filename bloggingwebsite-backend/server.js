@@ -7,18 +7,16 @@ const corsOptions=require('./models/corsOptions');
 const PORT=process.env.PORT || 4000;
 app.use(express.json());
 app.use(cors(corsOptions));
+
 const DbConnect=require('./config/dbConnect');
 
 DbConnect();
-
 app.use('/api',require('./routes/userRouter'));
-
-
 
 mongoose.connection.once("open",()=>{
     console.log("Connected to MongoDB");
     app.listen(PORT,()=>{
-        console.log("app is listening");
+        console.log(`app is listening on ${PORT}`);
     })  
 })
 mongoose.connection.on('error',(err)=>{

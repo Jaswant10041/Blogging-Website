@@ -1,26 +1,26 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useMatch } from "react-router-dom";
-import { AuthRoute, GuestRoute } from "./components";
-// import GuestRoute from "./components/GuestRoute";
-// import AuthRoute from "./components/AuthRoute";
+
+
 import './index.css'
-import { Auth } from "./pages";
+import { Auth, Home, Navbar,Logout } from "./pages";
 
 const App = () => {
   
   return (
     <Router>
-      <div>
-        <header></header>
+      <div className="m-3">
+        <header><Navbar/></header>
         <main>
           <Routes>
-            <Route path="/" element={<h1>Home page</h1>} />
+            <Route path="/" element={<Home/>} />
             <Route path="/register" element={<Auth />}>
               <Route path="/register" element={<h1>Register</h1>} />
             </Route>
             <Route path="/login" element={<Auth />}>
               <Route path="/login" element={<h1>Login page</h1>} />
             </Route>
+            <Route path="/logout" element={<Logout/>}></Route>
             <Route path="/settings" element={<h1>Settings page</h1>} />
             <Route path="/editor" element={<h1>Editor page</h1>} />
             <Route path="/editor/:id" element={<h1>Editor page</h1>} />
