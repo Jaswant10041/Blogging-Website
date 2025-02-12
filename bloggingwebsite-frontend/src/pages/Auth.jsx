@@ -5,12 +5,10 @@ import axios from "axios";
 import { useAuth } from "../hooks";
 const Auth = () => {
   const isRegistered = useMatch("/register");
-  const [credentials, setCredentials] = useState(true);
   const navigate = useNavigate();
   const { login } = useAuth();
-  //just like usestate
-  const [passwordError, setPasswordError] = useState("");
-
+  
+  const [error,setErrors]=useState('');
   const initialLoginDetails = { email: "", password: "" };
 
   async function submit(values, actions) {
@@ -20,25 +18,30 @@ const Auth = () => {
     try {
       const path = isRegistered ? "register" : "login";
       if (path == "register" && password.length < 8) {
-        alert("Password should be at least 8 characters");
-        setPasswordError("Password should be at least 8 characters");
-        return;
+        const error=new Error();
+        error.response={
+          status:422,
+          data:{
+              errors:{
+                body: "Password should be atleast 8 characters"}
+              }
+          }
+        throw error;
       }
-      const responce = await axios.post(
+      const response = await axios.post(
         `http://localhost:3001/api/users/${path}`,
         values
       );
-      console.log(responce);
-      const { data } = responce;
+      console.log(response);
+      const { data } = response;
       login(data);
       setCredentials(true);
       navigate("/");
     } catch (err) {
-      const { status, data } = err.responce;
-      if (status === 422) {
-        actions.setErrors(data.errors);
-        setCredentials(false);
-      }
+      console.log(err);
+      const { status, data } = err.response;
+      actions.setErrors(data.errors.body);
+      setErrors(data.errors.body);
     }
   }
   return (
@@ -53,14 +56,15 @@ const Auth = () => {
             <Link to={isRegistered != null ? "/login" : "/register"}>
               <p className="text-md text-center font-medium text-green-500">
                 {isRegistered != null ? "Already have an" : "Not created"}{" "}
-                account
+                account click here
               </p>
             </Link>
-            <h2 className="font-bold text-center">
+            {/* <h2 className="font-bold text-center">
               {credentials ? "" : "Incorrect Credentials"}
-            </h2>
+            </h2> */}
+            
             <h2 className="font-bold text-center">
-              {passwordError == "" ? "" : passwordError}
+              {error=== "" ? "" : error}
             </h2>
 
             <Formik
@@ -70,6 +74,7 @@ const Auth = () => {
                   : initialLoginDetails
               }
               onSubmit={submit}
+              enableReinitialize
             >
               {() => (
                 <>
@@ -79,6 +84,7 @@ const Auth = () => {
                       {isRegistered != null && (
                         <Field
                           type="text"
+                          autoFocus
                           name="name"
                           placeholder="Your name"
                           className="border border-zinc-700 w-96 m-2 p-4 rounded-full"
@@ -88,6 +94,7 @@ const Auth = () => {
                       <Field
                         type="email"
                         name="email"
+                        autoFocus={isRegistered===null}
                         placeholder="Your email"
                         className="border border-zinc-700 w-96 m-3 p-4 rounded-full"
                       />

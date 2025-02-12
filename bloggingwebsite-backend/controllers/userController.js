@@ -4,8 +4,24 @@ const Users=require('../models/userModel');
 const userLogin=async(req,res)=>{
     const data=req.body;
     const foundData=await Users.findOne({email:data.email});
+    if(!foundData){
+        res.status(404).json({
+            errors:{
+                body: "Account Not found",
+            },
+        });
+        return ;
+    }
     if(foundData){
-        await bcrypt.compare(data.password,foundData.password);
+        const isCorrectPassword=await bcrypt.compare(data.password,foundData.password);
+        if(!isCorrectPassword){
+            res.status(404).json({
+                errors:{
+                    body: "Incorrect Password",
+                },
+            });
+            return ;
+        }
         console.log(foundData);
         const dataWithToken=foundData.toUserResponse();
         // flag=true;
@@ -14,8 +30,8 @@ const userLogin=async(req,res)=>{
     else{
         res.status(422).json({
             errors:{
-                body: "Unable to Login a user",
-            },
+                body: "Unable to Login"
+            }
         });
     }  
 }
@@ -59,4 +75,16 @@ const getCurrentUser=async(req,res)=>{
     }
     res.status(200).json(user.toUserResponse());
 }
-module.exports={userLogin,userRegister,getCurrentUser};
+const updateUserData=async(req,res)=>{
+    const data=req.body;
+    console.log(data);
+    const {email,name,password}=data;
+    const foundData=await Users.findOne({email});
+    console.log(foundData);
+    const updatedData=await Users.findOneAndUpdate({email},{name:name},{
+        new:true
+    });
+    console.log(updatedData);
+    res.send("Data updated successfully");
+}
+module.exports={userLogin,userRegister,getCurrentUser,updateUserData};

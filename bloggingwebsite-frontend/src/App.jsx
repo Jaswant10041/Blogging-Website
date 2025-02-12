@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useMatch } from "react-router-d
 
 
 import './index.css'
-import { Auth, Home, Navbar,Logout } from "./pages";
+import { Auth, Home, Navbar,Logout,Settings } from "./pages";
 
 const App = () => {
   
@@ -21,7 +21,7 @@ const App = () => {
               <Route path="/login" element={<h1>Login page</h1>} />
             </Route>
             <Route path="/logout" element={<Logout/>}></Route>
-            <Route path="/settings" element={<h1>Settings page</h1>} />
+            <Route path="/settings" element={<Settings/>} />
             <Route path="/editor" element={<h1>Editor page</h1>} />
             <Route path="/editor/:id" element={<h1>Editor page</h1>} />
             <Route path="/article/:slug" element={<h1>Article page</h1>} />
