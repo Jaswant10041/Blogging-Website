@@ -15,7 +15,7 @@ const userLogin=async(req,res)=>{
     if(foundData){
         const isCorrectPassword=await bcrypt.compare(data.password,foundData.password);
         if(!isCorrectPassword){
-            res.status(404).json({
+            res.status(401).json({
                 errors:{
                     body: "Incorrect Password",
                 },
@@ -63,28 +63,38 @@ const userRegister=async(req,res)=>{
     catch(err){
         res.status(409).json({'msg':"Already registered"})
     }
-    
 }   
 const getCurrentUser=async(req,res)=>{
-    
     const email=req.email;
-    
     const user=await Users.findOne({email});
     if(!user){
         return res.status(404).json({message:"User Not Found"});
     }
     res.status(200).json(user.toUserResponse());
 }
+const ignore=(req,res)=>{
+    return res.status(200).json({message:"Authentication successful"});
+}
 const updateUserData=async(req,res)=>{
     const data=req.body;
     console.log(data);
-    const {email,name,password}=data;
+    const {email,name,oldPassword,newPassword}=data;
     const foundData=await Users.findOne({email});
-    console.log(foundData);
-    const updatedData=await Users.findOneAndUpdate({email},{name:name},{
+    // console.log(foundData);
+    const isCorrectPassword=await bcrypt.compare(oldPassword,foundData.password);
+    if(!isCorrectPassword){
+        res.status(401).json({
+            errors:{
+                body: "Incorrect Password",
+            },
+        });
+        return ;
+    }
+    const hashedPassword=await bcrypt.hash(newPassword,10);
+    const updatedData=await Users.findOneAndUpdate({email},{name:name,password:hashedPassword},{
         new:true
     });
     console.log(updatedData);
-    res.send("Data updated successfully");
+    res.status(200).json({data:updatedData})
 }
-module.exports={userLogin,userRegister,getCurrentUser,updateUserData};
+module.exports={userLogin,userRegister,getCurrentUser,updateUserData,ignore};

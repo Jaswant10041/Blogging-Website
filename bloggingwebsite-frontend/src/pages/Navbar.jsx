@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks";
 const Navbar = () => {
-  const { isAuth, authUser } = useAuth();
+  const { isAuth, authUser,logout } = useAuth();
+  
   console.log(authUser.name);
   return (
     <div className="mt-4">
@@ -34,7 +35,7 @@ const Navbar = () => {
                 <Link to={"/settings"}>Settings</Link>
               </div>
               <div className="font-medium text-green-600 text-2xl mx-4">
-                <Link to={"/logout"}>Logout</Link>
+                <button onClick={()=>logout()}>Logout</button>
               </div>
               <div className="font-medium text-green-600 text-2xl mx-4">
                 <Link to={`/@${authUser?.name}`}>{authUser?.name}</Link>

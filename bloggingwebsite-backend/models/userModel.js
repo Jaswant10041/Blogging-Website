@@ -4,7 +4,6 @@ const schema=new mongoose.Schema({
     name:{
         type:String,
         required:true,
-        Unique:true
     },
     email:{
         type:String,
@@ -38,6 +37,14 @@ schema.methods.toUserResponse=function(){
             email:this.email,
             accessToken: this.generateAccessToken()
         }
+    }
+}
+schema.methods.toProfileJSON=function(){
+    return {
+        username:this.name,
+        bio:this.bio,
+        image:this.image,
+        following:10
     }
 }
 const model=mongoose.model('users',schema);

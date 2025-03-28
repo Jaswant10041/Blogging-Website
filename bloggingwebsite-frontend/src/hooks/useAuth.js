@@ -1,18 +1,34 @@
 import React from 'react';
 import { proxy,useSnapshot } from 'valtio';
 
-function getAuthUser(){
+import axios from 'axios';
+async function getAuthUser(){
   const jwt=window.localStorage.getItem('jwt');
-  
   if(!jwt){
     return {};
   }
   const decodedJwt=atob(jwt);
-  return JSON.parse(decodedJwt);
-  
+  const parsedData= JSON.parse(decodedJwt);
+  console.log('localStorage Data',parsedData);
+  axios.defaults.headers.common['Authorization']='Token '+parsedData.accessToken;
+  console.log(parsedData.accessToken)
+  try{
+    const response=await axios.get('http://localhost:3001/api/users/isauthenticated');
+    console.log(response);
+  }
+  catch(err){
+    // console.log("this is in useAuth",err);
+    const {status}=err?.response;
+    // console.log(status);
+    if(status===401){
+      actions.logout();
+      return {};
+    }
+  }
+  return parsedData;
 }
 function getisAuth(){
-  const isAuth=window.localStorage.getItem('isAuth');
+  const isAuth=window.localStorage.getItem('jwt');
   if(!isAuth){
     return false;
   }
@@ -24,8 +40,7 @@ const actions={
         state.authUser=user;
         state.isAuth=true;
         window.localStorage.setItem('jwt',btoa(JSON.stringify(user)));
-        // window.localStorage.setItem('name',btoa(user.name));
-        // window.localStorage.setItem('email',btoa(user.email));
+        axios.defaults.headers.common['Authorization']='Token '+user.accessToken;
         window.localStorage.setItem('isAuth',true);
     },
     logout:()=>{
@@ -33,7 +48,9 @@ const actions={
       window.localStorage.removeItem('jwt');
       window.localStorage.removeItem('isAuth');
       state.isAuth=false;
-      console.log("Logout");
+      // axios.default.headers.common['Authorization']='';
+      delete axios.defaults.headers.common['Authorization'];
+      console.log("Logged out");
     }
 }
 const state=proxy({

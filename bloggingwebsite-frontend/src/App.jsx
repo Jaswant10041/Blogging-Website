@@ -1,9 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useMatch } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 
 import './index.css'
-import { Auth, Home, Navbar,Logout,Settings } from "./pages";
+import { Auth, Home, Navbar,Logout,Settings, CreateArticle, Article,  } from "./pages";
+
 
 const App = () => {
   
@@ -22,9 +23,9 @@ const App = () => {
             </Route>
             <Route path="/logout" element={<Logout/>}></Route>
             <Route path="/settings" element={<Settings/>} />
-            <Route path="/editor" element={<h1>Editor page</h1>} />
+            <Route path="/editor" element={<CreateArticle/>} />
             <Route path="/editor/:id" element={<h1>Editor page</h1>} />
-            <Route path="/article/:slug" element={<h1>Article page</h1>} />
+            <Route path="/article/:slug" element={<Article/>} />
             <Route path="/profile/:username" element={<h1>Profile page</h1>} />
             <Route path="/@:username" element={<h1>Profile page</h1>} />
           </Routes>

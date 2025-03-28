@@ -14,7 +14,6 @@ const Auth = () => {
   async function submit(values, actions) {
     console.log(values);
     const { password } = values;
-
     try {
       const path = isRegistered ? "register" : "login";
       if (path == "register" && password.length < 8) {
@@ -34,14 +33,23 @@ const Auth = () => {
       );
       console.log(response);
       const { data } = response;
+      navigate('/');
       login(data);
-      setCredentials(true);
-      navigate("/");
+      setErrors('');
+      
     } catch (err) {
-      console.log(err);
-      const { status, data } = err.response;
-      actions.setErrors(data.errors.body);
-      setErrors(data.errors.body);
+      console.log("this is in auth",err);
+      const { status, data } = err?.response;
+      if(status===409){
+        // alert("You are already registered please login");
+        setErrors("You are already registered with this email");
+      }
+      else if(status===401){
+        setErrors("Incorrect Password");
+      }
+      actions.setErrors(data.msg);
+      // console.log(data);
+      
     }
   }
   return (
