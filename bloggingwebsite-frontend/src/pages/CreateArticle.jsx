@@ -1,127 +1,104 @@
 import axios from "axios";
 import { Field, Formik, Form } from "formik";
-import React from "react";
-import { useState } from "react";
-// import useArticleQuery from "../hooks/useArticleQuery";
+import React, { useState } from "react";
 import { useCreateArticle } from "../hooks";
+
 const CreateArticle = () => {
-  const {isCreating,createArticle}=useCreateArticle();
+  const { isCreating, createArticle } = useCreateArticle();
   const [tagValues, setTagValues] = useState([]);
   const [tagValue, setTagValue] = useState("");
-  const initialValues = { title: "", description: "", body: "", tags: "" };
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState(null);
-  // const { articleData } = useArticleQuery(formData);
-  // console.log(articleData);
-  const handleEnter = async (e) => {
+
+  const initialValues = { title: "", description: "", body: "", tags: "" };
+
+  const handleEnter = (e) => {
     if (e.key === "Enter") {
-      console.log(e);
       e.preventDefault();
-      const value = e.target.value;
-      setTagValue("");
-      setTagValues((prev) => [...prev, value]);
+      const value = e.target.value.trim();
+      if (value) {
+        setTagValues((prev) => [...prev, value]);
+        setTagValue("");
+      }
     }
   };
-  const handleSubmit = async (values, actions) => {
+
+  const handleSubmit = (values, actions) => {
     if (!isSubmitting) {
       setIsSubmitting(true);
     }
     values.tags = tagValues;
-    // if (values.title === "") {
-    //   setIsSubmitting(false);
-    //   return;
-    // }
-    // if (values.description === "") {
-    //   // setDescriptionValidate('required');
-    //   setIsSubmitting(false);
-    //   return;
-    // }
-    // if (values.body === "") {
-    //   // setBodyValidate('required');
-    //   setIsSubmitting(false);
-    //   return;
-    // }
-
     createArticle(values);
-    // console.log(articleData);
     setTimeout(() => {
-      //after a delay we are ready to take another submission
       setIsSubmitting(false);
       actions.resetForm();
       setTagValues([]);
       setTagValue("");
-      setFormData(null);
     }, 2000);
   };
-  const handleOnchange = async (e) => {
-    setTagValue(e.target.value);
-  };
+
   return (
-    <div className="flex justify-center">
-    
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        enableReinitialize
-      >
-        {() => (
-          <Form className="w-full md:w-3/5 lg:w-3/5 mt-8">
-            <fieldset className="flex flex-col">
-            <div className="font-medium text-4xl text-center m-5 flex justify-center">Post Article</div>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
+      <div className="w-full md:w-3/5 lg:w-2/5 bg-white rounded-2xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-center text-green-600 mb-8">Post New Article</h1>
+        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          {() => (
+            <Form className="flex flex-col gap-4">
               <Field
                 type="text"
                 name="title"
                 placeholder="Article Title"
-                className="border-2 m-2 p-2 w-full"
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
                 required
               />
-
               <Field
                 type="text"
                 name="description"
-                placeholder="What's this article about"
-                className="border-2 m-2 p-2 w-full"
+                placeholder="What's this article about?"
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
                 required
               />
-
               <Field
                 as="textarea"
-                rows="5"
-                type="text"
                 name="body"
-                placeholder="Write your article......"
-                className="border-2 m-2 p-2 w-full"
+                placeholder="Write your article..."
+                rows="6"
+                className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-400 resize-none"
                 required
               />
-
-              <Field
-                type="text"
-                name="tags"
-                onKeyDown={handleEnter}
-                value={tagValue}
-                onChange={handleOnchange}
-                placeholder="Enter tags"
-                className="border-2 m-2 p-2 w-full"
-              />
-              <ul className="flex">
-                {tagValues.map((item, index) => (
-                  <li key={index} className="mx-2">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button
-                type="submit"
-                
-                disabled={isSubmitting}
-                className="border-2 w-20 m-2 p-1 bg-green-500 text-white rounded-full"
-              >
-                {isSubmitting === true ? "Publishing" : "Publish Article"}
-              </button>
-            </fieldset>
-          </Form>
-        )}
-      </Formik>
+              <div>
+                <Field
+                  type="text"
+                  name="tags"
+                  onKeyDown={handleEnter}
+                  value={tagValue}
+                  onChange={(e) => setTagValue(e.target.value)}
+                  placeholder="Enter tags (press Enter to add)"
+                  className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+                <div className="flex flex-wrap mt-2 gap-2">
+                  {tagValues.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-center mt-6">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-full transition duration-300 disabled:opacity-50"
+                >
+                  {isSubmitting ? "Publishing..." : "Publish Article"}
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
     </div>
   );
 };
